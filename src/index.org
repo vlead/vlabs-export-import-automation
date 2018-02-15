@@ -114,6 +114,7 @@ class ExportLab(unittest.TestCase):
 
     def test_export_lab(self):
         driver = self.driver
+        driver.maximize_window()
         driver.get(self.base_url + "/logout")
         driver.get(self.base_url + "/login")
         driver.find_element_by_id("login-email").clear()
