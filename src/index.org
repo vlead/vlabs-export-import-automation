@@ -89,6 +89,82 @@
 
 
 #+END_SRC
+** Python Test Case to Export Lab
+#+BEGIN_SRC python :tangle tests/test_export_lab.py 
+# -*- coding: utf-8 -*-
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoAlertPresentException
+import unittest, time, re
+
+class ExportLab(unittest.TestCase):
+    def setUp(self):
+        self.caps = webdriver.DesiredCapabilities.FIREFOX
+        self.caps["marionette"] = False
+        self.driver = webdriver.Firefox(capabilities=self.caps)
+ #       self.driver = webdriver.Firefox()
+        self.driver.implicitly_wait(30)
+        self.base_url = "http://mybox.vlabs.ac.in"
+        self.studio_base_url = "http://mybox.vlabs.ac.in:18010"
+        self.verificationErrors = []
+        self.accept_next_alert = True
+
+    def test_export_lab(self):
+        driver = self.driver
+        driver.get(self.base_url + "/logout")
+        driver.get(self.base_url + "/login")
+        driver.find_element_by_id("login-email").clear()
+        driver.find_element_by_id("login-email").send_keys("honor@example.com")
+        driver.find_element_by_id("login-password").clear()
+        driver.find_element_by_id("login-password").send_keys("edx")
+        driver.find_element_by_xpath("//button[@type='submit']").click()
+
+        driver.get(self.studio_base_url + "/home/")
+        driver.find_element_by_xpath("//div[@id='content']/div[2]/section/article/div[3]/ul/li[31]/a/h3").click()
+        driver.find_element_by_xpath("//div[@id='view-top']/header/div/nav/ol/li[3]/h3/span[2]").click()
+        driver.find_element_by_link_text("Export").click()
+        driver.find_element_by_link_text("Export Course Content").click()
+        driver.find_element_by_link_text("Download Exported Course").click()
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference('browser.download.folderList', 2)
+        profile.set_preference('browser.download.manager.showWhenStarting', False)
+        profile.set_preference('browser.download.dir', '/home/virtual-labs/projects/testing')
+        profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'tar')
+
+
+    def is_element_present(self, how, what):
+        try: self.driver.find_element(by=how, value=what)
+        except NoSuchElementException as e: return False
+        return True
+    
+    def is_alert_present(self):
+        try: self.driver.switch_to_alert()
+        except NoAlertPresentException as e: return False
+        return True
+    
+    def close_alert_and_get_its_text(self):
+        try:
+            alert = self.driver.switch_to_alert()
+            alert_text = alert.text
+            if self.accept_next_alert:
+                alert.accept()
+            else:
+                alert.dismiss()
+            return alert_text
+        finally: self.accept_next_alert = True
+    
+    def tearDown(self):
+        self.driver.quit()
+        self.assertEqual([], self.verificationErrors)
+
+if __name__ == "__main__":
+    unittest.main()
+
+
+#+END_SRC
 ** Export two Labs
 #+BEGIN_SRC html
 <?xml version="1.0" encoding="UTF-8"?>
