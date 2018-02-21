@@ -14,41 +14,27 @@
     implementing the Vlabs Automated Testing.
 
 * Detailed Plan 
-** Implementation of Automated Testing for One OpenedX lab
+** Implementation of Automated Export and Import of an OpenedX lab.
 #+caption:  realization-plan-milestone-8
 #+name: tbl-rlz-pln-ml-8
 
-|---+-------+----------------------------------------+--------+----------+--------+------------+------------+--------+----------|
-|   |    S. | Tasks                                  | Github | Expected | Actual |  Estimated |     Actual | Status | Assignee |
-|   |    NO |                                        | Issues |   Effort | Effort |     Start, |     Start/ |        |          |
-|   |       |                                        |        |      (in |    (in |        End |        End |        |          |
-|   |       |                                        |        |   person | person |      Dates |      Dates |        |          |
-|   |       |                                        |        |   hours) | hours) |            |            |        |          |
-|---+-------+----------------------------------------+--------+----------+--------+------------+------------+--------+----------|
-|   |    1. | Install/Add Selenium                   | [[https://github.com/vlead/vlabs-automated-testing/issues/1][#1]]     |       24 |     12 | 30-01-2018 | 30-02-2018 | Done   | Madhavi  |
-|   |       | IDE to firefox                         |        |          |        | 30-01-2018 | 31-02-2018 |        | Shiva    |
-|---+-------+----------------------------------------+--------+----------+--------+------------+------------+--------+----------|
-|   |    2. | Test 'Login/Logout'                    | [[https://github.com/vlead/vlabs-automated-testing/issues/2][#2]]     |       03 |     12 | 01-02-2018 | 01-02-2018 | Done   | Madhavi  |
-|   |       | functionality in                       |        |          |        | 01-02-2018 | 02-02-2018 |        |          |
-|   |       | OpenedX using Selenium RC              |        |          |        |            |            |        |          |
-|---+-------+----------------------------------------+--------+----------+--------+------------+------------+--------+----------|
-|   |    3. | Test All Lab URLs are                  | [[https://github.com/vlead/vlabs-automated-testing/issues/3][#3]]     |       06 |     12 | 02-02-2018 | 01-02-2018 | Done   | Madhavi  |
-|   |       | working in OpenedX                     |        |          |        | 02-02-2018 | 02-02-2018 |        |          |
-|   |       | using Selenium RC                      |        |          |        |            |            |        |          |
-|---+-------+----------------------------------------+--------+----------+--------+------------+------------+--------+----------|
-|   |    4. | Test 'Experiments,                     | [[https://github.com/vlead/vlabs-automated-testing/issues/4][#4]]     |       48 |     24 | 03-02-2018 | 02-02-2018 | Done   | Madhavi  |
-|   |       | Full Screen and Feedbacks are working' |        |          |        | 03-02-2018 | 03-02-2018 |        |          |
-|   |       | for a Lab in OpenedX using Selenium RC |        |          |        |            |            |        |          |
-|---+-------+----------------------------------------+--------+----------+--------+------------+------------+--------+----------|
-|   |    5. | Test 'Experiment Feedback'             | [[https://github.com/vlead/vlabs-automated-testing/issues/5][#5]]     |       24 |     12 | 04-02-2018 | 03-02-2018 | Done   | Madhavi  |
-|   |       | of an OpenedX Lab using Selenium RC    |        |          |        | 04-02-2018 | 04-02-2018 |        |          |
-|---+-------+----------------------------------------+--------+----------+--------+------------+------------+--------+----------|
-|   |    6. | Test 'Lab Feedback' of an              | [[https://github.com/vlead/vlabs-automated-testing/issues/6][#6]]     |       24 |      6 | 05-02-2018 | 04-02-2018 | Done   | Madhavi  |
-|   |       | OpenedX Lab using Selenium RC          |        |          |        | 05-02-2018 | 05-02-2018 |        |          |
-|---+-------+----------------------------------------+--------+----------+--------+------------+------------+--------+----------|
-|   | Total |                                        |        |      129 |     81 |            |            |        |          |
-| ^ |       |                                        |        |      est |    act |            |            |        |          |
-|---+-------+----------------------------------------+--------+----------+--------+------------+------------+--------+----------|
+|---+-------+------------------------------------------------------+--------+----------+--------+-----------+--------+--------+----------|
+|   | S.    | Tasks                                                | Github | Expected | Actual | Estimated | Actual | Status | Assignee |
+|   | NO    |                                                      | Issues | Effort   | Effort | Start,    | Start/ |        |          |
+|   |       |                                                      |        | (in      | (in    | End       | End    |        |          |
+|   |       |                                                      |        | person   | person | Dates     | Dates  |        |          |
+|   |       |                                                      |        | hours)   | hours) |           |        |        |          |
+|---+-------+------------------------------------------------------+--------+----------+--------+-----------+--------+--------+----------|
+|   | 1.    | Implementation of Automated Export of an OpenedX lab | [[https://github.com/vlead/vlabs-automated-testing/issues/1][#1]]     | 24       | 12     |           |        |        | Madhavi  |
+|   |       |                                                      |        |          |        |           |        |        |          |
+|---+-------+------------------------------------------------------+--------+----------+--------+-----------+--------+--------+----------|
+|   | 2.    | Implementation of Automated Import of an OpenedX lab | [[https://github.com/vlead/vlabs-automated-testing/issues/2][#2]]     | 24       |        |           |        |        | Madhavi  |
+|   |       |                                                      |        |          |        |           |        |        |          |
+|   |       |                                                      |        |          |        |           |        |        |          |
+|---+-------+------------------------------------------------------+--------+----------+--------+-----------+--------+--------+----------|
+|   | Total |                                                      |        | 129      | 81     |           |        |        |          |
+| ^ |       |                                                      |        | est      | act    |           |        |        |          |
+|---+-------+------------------------------------------------------+--------+----------+--------+-----------+--------+--------+----------|
 #+TBLFM: $est=vsum(@II+1..@-1)
 #+TBLFM: $act=vsum(@II+1..@-1)
 
