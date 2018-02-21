@@ -91,6 +91,7 @@
 #+END_SRC
 ** Python Test Case to Export Lab
 #+BEGIN_SRC python :tangle tests/test_export_lab.py 
+
 # -*- coding: utf-8 -*-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -98,17 +99,24 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
+from selenium.webdriver import ActionChains
+
 import unittest, time, re
 
 class ExportLab(unittest.TestCase):
     def setUp(self):
-        self.caps = webdriver.DesiredCapabilities.FIREFOX
-        self.caps["marionette"] = False
-        self.driver = webdriver.Firefox(capabilities=self.caps)
- #       self.driver = webdriver.Firefox()
+#        self.caps = webdriver.DesiredCapabilities.FIREFOX
+#        self.caps["marionette"] = False
+#        self.driver = webdriver.Firefox(capabilities=self.caps)
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference('browser.download.folderList', 1)
+        profile.set_preference('browser.download.manager.showWhenStarting', False)
+        profile.set_preference('browser.download.dir', '/home/sravanthi/projects/')
+        profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/x-gzip')
+        profile.set_preference('browser.download.manager.showWhenStarting', False)
+        self.driver = webdriver.Firefox(firefox_profile=profile)
         self.driver.implicitly_wait(30)
-        self.base_url = "http://mybox.vlabs.ac.in"
-        self.studio_base_url = "http://mybox.vlabs.ac.in:18010"
+        self.base_url = "http://mybox.vlabs.ac.in:18010"
         self.verificationErrors = []
         self.accept_next_alert = True
 
@@ -116,25 +124,25 @@ class ExportLab(unittest.TestCase):
         driver = self.driver
         driver.maximize_window()
         driver.get(self.base_url + "/logout")
-        driver.get(self.base_url + "/login")
-        driver.find_element_by_id("login-email").clear()
-        driver.find_element_by_id("login-email").send_keys("honor@example.com")
-        driver.find_element_by_id("login-password").clear()
-        driver.find_element_by_id("login-password").send_keys("edx")
+        driver.get(self.base_url + "/signin")
+        driver.find_element_by_id("email").clear()
+        driver.find_element_by_id("email").send_keys("honor@example.com")
+        driver.find_element_by_id("password").clear()
+        driver.find_element_by_id("password").send_keys("edx")
         driver.find_element_by_xpath("//button[@type='submit']").click()
 
-        driver.get(self.studio_base_url + "/home/")
         driver.find_element_by_xpath("//div[@id='content']/div[2]/section/article/div[3]/ul/li[31]/a/h3").click()
         driver.find_element_by_xpath("//div[@id='view-top']/header/div/nav/ol/li[3]/h3/span[2]").click()
         driver.find_element_by_link_text("Export").click()
+        time.sleep(2)
         driver.find_element_by_link_text("Export Course Content").click()
-        driver.find_element_by_link_text("Download Exported Course").click()
-        profile = webdriver.FirefoxProfile()
-        profile.set_preference('browser.download.folderList', 2)
-        profile.set_preference('browser.download.manager.showWhenStarting', False)
-        profile.set_preference('browser.download.dir', '/home/virtual-labs/projects/testing')
-        profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/x-gzip')
-        profile.set_preference("browser.download.manager.showWhenStarting", False)
+        time.sleep(2)
+        actionChains = ActionChains(driver)
+        actionChains.context_click(driver.find_element_by_link_text("Download Exported Course")).perform()
+#        webdriver.ActionChains(self.driver).move_to_element('Save Link As...').context_click('Save Link As...').perform()
+#        actionChains.context.browser.move_to_element('Save Link As...').context_click('Save Link As...').perform()
+
+        time.sleep(10)
 
     def is_element_present(self, how, what):
         try: self.driver.find_element(by=how, value=what)
@@ -163,7 +171,6 @@ class ExportLab(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
 
 #+END_SRC
 ** Export two Labs
