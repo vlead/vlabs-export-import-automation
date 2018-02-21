@@ -133,8 +133,8 @@ class ExportLab(unittest.TestCase):
         profile.set_preference('browser.download.folderList', 2)
         profile.set_preference('browser.download.manager.showWhenStarting', False)
         profile.set_preference('browser.download.dir', '/home/virtual-labs/projects/testing')
-        profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'tar')
-
+        profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/x-gzip')
+        profile.set_preference("browser.download.manager.showWhenStarting", False)
 
     def is_element_present(self, how, what):
         try: self.driver.find_element(by=how, value=what)
