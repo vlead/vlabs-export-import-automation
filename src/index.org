@@ -195,8 +195,7 @@ class ImportLab(unittest.TestCase):
         self.caps["marionette"] = False
         self.driver = webdriver.Firefox(capabilities=self.caps)
         self.driver.implicitly_wait(30)
-        self.base_url = "http://mybox.vlabs.ac.in"
-        self.studio_base_url = "http://mybox.vlabs.ac.in:18010"
+        self.base_url = "http://mybox.vlabs.ac.in:18010"
         self.verificationErrors = []
         self.accept_next_alert = True
 
@@ -204,20 +203,22 @@ class ImportLab(unittest.TestCase):
         driver = self.driver
         driver.maximize_window()
         driver.get(self.base_url + "/logout")
-        driver.get(self.base_url + "/login")
-        driver.find_element_by_id("login-email").clear()
-        driver.find_element_by_id("login-email").send_keys("honor@example.com")
-        driver.find_element_by_id("login-password").clear()
-        driver.find_element_by_id("login-password").send_keys("edx")
+        driver.get(self.base_url + "/signin")
+        driver.find_element_by_id("email").clear()
+        driver.find_element_by_id("email").send_keys("honor@example.com")
+        driver.find_element_by_id("password").clear()
+        driver.find_element_by_id("password").send_keys("edx")
         driver.find_element_by_xpath("//button[@type='submit']").click()
 
-        driver.get(self.studio_base_url + "/home/")
+        driver.get(self.base_url + "/home/")
         driver.find_element_by_xpath("//div[@id='content']/div[2]/section/article/div[3]/ul/li[31]/a/h3").click()
         driver.find_element_by_xpath("//div[@id='view-top']/header/div/nav/ol/li[3]/h3/span[1]").click()
         driver.find_element_by_link_text("Import").click()
         time.sleep(10)
-        driver.find_element_by_link_text("Choose new file").click()
+        driver.find_element_by_css_selector("input[type=file]").send_keys('/home/virtual-labs/projects/open-edx-FAB-laboratory-coep.tar.gz')
         time.sleep(10)
+        driver.find_element_by_id("replace-courselike-button").click()
+        driver.find_element_by_id("view-updated-button").click()
 
     def is_element_present(self, how, what):
         try: self.driver.find_element(by=how, value=what)
@@ -248,3 +249,4 @@ if __name__ == "__main__":
     unittest.main()
 
 #+END_SRC
+    
