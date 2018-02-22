@@ -211,7 +211,8 @@ class ImportLab(unittest.TestCase):
         driver.find_element_by_xpath("//button[@type='submit']").click()
 
         driver.get(self.base_url + "/home/")
-        driver.find_element_by_xpath("//div[@id='content']/div[2]/section/article/div[3]/ul/li[31]/a/h3").click()
+        driver.get(self.base_url + "/course/course-v1:Virtual-Labs+hmt03+Anytime")
+#        driver.find_element_by_xpath("//div[@id='content']/div[2]/section/article/div[3]/ul/li[31]/a/h3").click()
         driver.find_element_by_xpath("//div[@id='view-top']/header/div/nav/ol/li[3]/h3/span[1]").click()
         driver.find_element_by_link_text("Import").click()
         time.sleep(10)
