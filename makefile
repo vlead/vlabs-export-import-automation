@@ -25,7 +25,7 @@ lint:  install-pep
 build-with-lint: build lint
 
 run-py-tests:
-	unset http_proxy export PYTHONPATH=${PWD}/${CODE_DIR}; find ${PWD}/${CODE_DIR} -name '*test_*.py' -exec python '{}' \;
+#	unset http_proxy export PYTHONPATH=${PWD}/${CODE_DIR}; find ${PWD}/${CODE_DIR} -name '*test_*.py' -exec python '{}' \;
 
 clean:	
 	make -f tangle-make clean
