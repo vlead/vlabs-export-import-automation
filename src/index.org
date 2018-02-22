@@ -28,7 +28,8 @@
   3) =Selenium= Icon will be shown in the browser top corner.
     
 * Procedure
-** Export single lab
+** Export Lab
+*** Export single lab
 #+BEGIN_SRC html
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -89,7 +90,7 @@
 
 
 #+END_SRC
-** Python Test Case to Export Lab
+*** Python Test Case to Export Lab
 #+BEGIN_SRC python :tangle tests/test_export_lab.py 
 
 # -*- coding: utf-8 -*-
@@ -173,64 +174,77 @@ if __name__ == "__main__":
     unittest.main()
 
 #+END_SRC
-** Export two Labs
-#+BEGIN_SRC html
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head profile="http://selenium-ide.openqa.org/profiles/test-case">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="selenium.base" href="http://mybox.vlabs.ac.in:18010/" />
-<title>New Test</title>
-</head>
-<body>
-<table cellpadding="1" cellspacing="1" border="1">
-<thead>
-<tr><td rowspan="1" colspan="3">New Test</td></tr>
-</thead><tbody>
-<tr>
-	<td>open</td>
-	<td>/home/</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>css=h3.course-title</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Export</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Download Exported Course</td>
-	<td></td>
-</tr>
-<tr>
-	<td>open</td>
-	<td>/home/</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//div[@id='content']/div[2]/section/article/div[3]/ul/li[31]/a/h3</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Export</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Download Exported Course</td>
-	<td></td>
-</tr>
-</tbody></table>
-</body>
-</html>
+** Import Lab
+*** Python Test Case to Import Lab
+#+BEGIN_SRC python :tangle tests/test_import_lab.py 
+# -*- coding: utf-8 -*-
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoAlertPresentException
+import unittest, time, re
+import json
+import urllib
 
+class ImportLab(unittest.TestCase):
+
+    def setUp(self):
+        self.caps = webdriver.DesiredCapabilities.FIREFOX
+        self.caps["marionette"] = False
+        self.driver = webdriver.Firefox(capabilities=self.caps)
+        self.driver.implicitly_wait(30)
+        self.base_url = "http://mybox.vlabs.ac.in"
+        self.studio_base_url = "http://mybox.vlabs.ac.in:18010"
+        self.verificationErrors = []
+        self.accept_next_alert = True
+
+    def test_import_lab(self):
+        driver = self.driver
+        driver.maximize_window()
+        driver.get(self.base_url + "/logout")
+        driver.get(self.base_url + "/login")
+        driver.find_element_by_id("login-email").clear()
+        driver.find_element_by_id("login-email").send_keys("honor@example.com")
+        driver.find_element_by_id("login-password").clear()
+        driver.find_element_by_id("login-password").send_keys("edx")
+        driver.find_element_by_xpath("//button[@type='submit']").click()
+
+        driver.get(self.studio_base_url + "/home/")
+        driver.find_element_by_xpath("//div[@id='content']/div[2]/section/article/div[3]/ul/li[31]/a/h3").click()
+        driver.find_element_by_xpath("//div[@id='view-top']/header/div/nav/ol/li[3]/h3/span[1]").click()
+        driver.find_element_by_link_text("Import").click()
+        time.sleep(10)
+        driver.find_element_by_link_text("Choose new file").click()
+        time.sleep(10)
+
+    def is_element_present(self, how, what):
+        try: self.driver.find_element(by=how, value=what)
+        except NoSuchElementException as e: return False
+        return True
+    
+    def is_alert_present(self):
+        try: self.driver.switch_to_alert()
+        except NoAlertPresentException as e: return False
+        return True
+    
+    def close_alert_and_get_its_text(self):
+        try:
+            alert = self.driver.switch_to_alert()
+            alert_text = alert.text
+            if self.accept_next_alert:
+                alert.accept()
+            else:
+                alert.dismiss()
+            return alert_text
+        finally: self.accept_next_alert = True
+    
+    def tearDown(self):
+        self.driver.quit()
+        self.assertEqual([], self.verificationErrors)
+
+if __name__ == "__main__":
+    unittest.main()
 
 #+END_SRC
