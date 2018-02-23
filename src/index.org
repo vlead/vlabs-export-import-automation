@@ -16,70 +16,8 @@
 
 * Procedure
 ** Export Lab
-*** Export single lab
-#+BEGIN_SRC html
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head profile="http://selenium-ide.openqa.org/profiles/test-case">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="selenium.base" href="http://mybox.vlabs.ac.in:18010/" />
-<title>New Test</title>
-</head>
-<body>
-<table cellpadding="1" cellspacing="1" border="1">
-<thead>
-<tr><td rowspan="1" colspan="3">New Test</td></tr>
-</thead><tbody>
-<tr>
-	<td>open</td>
-	<td>/home/</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>css=h3.course-title</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Export</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Download Exported Course</td>
-	<td></td>
-</tr>
-<tr>
-	<td>open</td>
-	<td>/home/</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//div[@id='content']/div[2]/section/article/div[3]/ul/li[31]/a/h3</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Export</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Download Exported Course</td>
-	<td></td>
-</tr>
-</tbody></table>
-</body>
-</html>
-
-
-#+END_SRC
 *** Python Test Case to Export Lab
 #+BEGIN_SRC python :tangle tests/test_export_lab.py 
-
 # -*- coding: utf-8 -*-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -92,22 +30,55 @@ from selenium.webdriver import ActionChains
 import unittest, time, re
 
 class ExportLab(unittest.TestCase):
+#+END_SRC
+
+    A =setUp()= method works as an entry point for the test
+cases. We can use it to run a fixed set of actions before
+executing a test or all the tests defined in the class.
+
+These are pre-requisites which may include the following
+test setup preparation tasks.
+
+Create an instance of a browser driver.
+#+BEGIN_SRC python :tangle tests/test_export_lab.py 
     def setUp(self):
-#        self.caps = webdriver.DesiredCapabilities.FIREFOX
-#        self.caps["marionette"] = False
-#        self.driver = webdriver.Firefox(capabilities=self.caps)
+        self.caps = webdriver.DesiredCapabilities.FIREFOX
+        self.caps["marionette"] = False
+        self.driver = webdriver.Firefox(capabilities=self.caps)
+
+#+END_SRC 
+Set up browser preferences.
+#+BEGIN_SRC python :tangle tests/test_export_lab.py 
         profile = webdriver.FirefoxProfile()
         profile.set_preference('browser.download.folderList', 1)
         profile.set_preference('browser.download.manager.showWhenStarting', False)
         profile.set_preference('browser.download.dir', '/home/sravanthi/projects/')
         profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/x-gzip')
         profile.set_preference('browser.download.manager.showWhenStarting', False)
+#+END_SRC
+Navigate to a base URL.
+#+BEGIN_SRC python :tangle tests/test_export_lab.py 
         self.driver = webdriver.Firefox(firefox_profile=profile)
         self.driver.implicitly_wait(30)
         self.base_url = "http://mybox.vlabs.ac.in:18010"
         self.verificationErrors = []
         self.accept_next_alert = True
-
+#+END_SRC
+After creating a setUp() method, we can now write some tests
+to verify the application's functionality. 
+*Use Case* 
+1. Visit the base url mentioned in setup
+2. Logout from the site if already logged in
+3. Login to the site
+4. Enter username and password
+5. Click on submit
+6. Visit the lab by accessing the url from =lab-info.json= file
+7. Click on export option from the drop down menu
+8. Click on =Export= button
+9. Click on =Export Course Content= button
+10. Finally save the file to the disk.
+11. Rename the file with lab name mentioned in =lab-info.json=
+#+BEGIN_SRC python :tangle tests/test_export_lab.py 
     def test_export_lab(self):
         driver = self.driver
         driver.maximize_window()
@@ -119,7 +90,11 @@ class ExportLab(unittest.TestCase):
         driver.find_element_by_id("password").send_keys("edx")
         driver.find_element_by_xpath("//button[@type='submit']").click()
 
-        driver.find_element_by_xpath("//div[@id='content']/div[2]/section/article/div[3]/ul/li[31]/a/h3").click()
+        driver.get(self.base_url + "/home/")
+        with open('lab-info.json') as data_file:    
+             data = json.load(data_file)
+             driver.get(self.base_url + data[0]['url'])
+#        driver.find_element_by_xpath("//div[@id='content']/div[2]/section/article/div[3]/ul/li[31]/a/h3").click()
         driver.find_element_by_xpath("//div[@id='view-top']/header/div/nav/ol/li[3]/h3/span[2]").click()
         driver.find_element_by_link_text("Export").click()
         time.sleep(2)
@@ -152,11 +127,27 @@ class ExportLab(unittest.TestCase):
                 alert.dismiss()
             return alert_text
         finally: self.accept_next_alert = True
-    
+#+END_SRC
+Once the test execution finishes, the pre-requisites
+specified in the setUp() method have to be cleaned up.
+
+So to achieve this, the base TestCase class provides another
+method i.e. tearDown() which the runner calls after test
+execution. It lets us clean the values initialized at the
+beginning of test via setUp() method.
+
+In our example, when the test execution ends, we no longer
+need the instance of Firefox. So we will close it in the
+tearDown() method, as shown in the following code.
+#+BEGIN_SRC python :tangle tests/test_export_lab.py 
     def tearDown(self):
         self.driver.quit()
         self.assertEqual([], self.verificationErrors)
+#+END_SRC
 
+Running the tests from the command line would require us to
+add a call to the main() method in the test script.
+#+BEGIN_SRC python :tangle tests/test_export_lab.py 
 if __name__ == "__main__":
     unittest.main()
 
