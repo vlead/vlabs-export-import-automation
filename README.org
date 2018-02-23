@@ -1,0 +1,9 @@
+* Introduction
+  This repository contains the implementation of
+  =vlabs-export-import-automation= 
+
+* Setup development environment
+  Follow [[./src/deployment/setup-dev-environment.org][documentation]] to setup the development environment
+ 
+   
+

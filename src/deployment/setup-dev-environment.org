@@ -1,0 +1,64 @@
+#+TITLE: Setup Selenium and its Dependencies in Dev Environment
+#+AUTHOR: VLEAD
+#+DATE: [2018-02-23 Fri]
+#+PROPERTY: results output
+#+PROPERTY: exports code
+#+SETUPFILE: ../org-templates/level-1.org
+#+options: ^:nil
+#+LATEX: Literal LaTeX code for export
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+
+** Introduction
+   This document has steps to install selenium and its
+   dependencies on development environment
+** Steps to install Selenium Webdriver to run python unit test cases
+*** Steps to install Selenium
+    1. If you have pip on your system, you can simply install
+       or upgrade the Python bindings:
+       #+BEGIN_EXAMPLE
+       pip install -U selenium
+       #+END_EXAMPLE
+    2. Alternately, download the source distribution from
+       PyPI (e.g. selenium-3.9.0.tar.gz), unarchive it, and
+       run:
+       #+BEGIN_EXAMPLE
+       wget https://pypi.python.org/packages/b4/54/ba7059b254a72fc30f1d8b838eb951003ee6e5ba716bb9b0ce0e4c58e308/selenium-3.9.0.tar.gz#md5=0a717bfcc26781c77a597c3fca335ccf
+       tar -xvf selenium-3.9.0.tar.gz
+       cd selenium-3.9.0/
+       sudo su -
+       python setup.py install
+       #+END_EXAMPLE
+*** Steps to install Geckodriver
+    1. Execute the below steps to install geckodriver 
+       #+BEGIN_EXAMPLE
+       wget https://github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-linux64.tar.gz
+       sudo sh -c 'tar -x geckodriver -zf geckodriver-v0.16.1-linux64.tar.gz -O > /usr/bin/geckodriver'
+       sudo chmod +x /usr/bin/geckodriver
+       rm geckodriver-v0.16.1-linux64.tar.gz
+       #+END_EXAMPLE
+
+
+** Steps to install Selenium RC on Firefox Web Browser 
+*** Pre-requisites
+   1) Operating System: Ubuntu 14.04
+   2) Firefox Version: 40.0.3 
+     
+*** Steps to install selenium IDE
+    1. Add Selenium IDE to the firefox web browser as a
+       plugin. Visit [[https://addons.mozilla.org/en-US/firefox/addon/selenium-ide/][link]] and click on =Add to Firefox=
+       button to add Selenium IDE to firefox.
+    2. Restart your browser to apply changes.
+    3. =Selenium= Icon will be shown in the browser top corner.
+** Steps to Install Firebug for Firefox. 
+   Firebug is a web inspector add-on for Firefox. This is
+   an Optional step. Firebug is mainly used in this project
+   to find the xpath of an element.
+   1. Click the Firefox Menu button and select
+      =Add-ons.=
+   2. Click =Get Add-ons= and then click the =Get more
+      add-ons!= button.
+   3. Search for =Firebug= and then click the =Add to
+      Firefox= button next to it.
+   4. Confirm that you want to install Firebug and then
+      restart Firefox when prompted.
