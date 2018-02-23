@@ -14,9 +14,8 @@
   This document describes how to export and import the vlabs
   from openedx platform automatically.
 
-* Procedure
-** Export Lab
-*** Python Test Case to Export Lab
+* Export Lab
+** Python Test Case to Export Lab
     A =setUp()= method works as an entry point for the test
 cases. We can use it to run a fixed set of actions before
 executing a test or all the tests defined in the class.
@@ -115,26 +114,26 @@ to verify the application's functionality.
             if file.endswith(".tar.gz"):
                 os.rename(os.path.join(path, file), os.path.join(path, lab_name))
 
-    def is_element_present(self, how, what):
-        try: self.driver.find_element(by=how, value=what)
-        except NoSuchElementException as e: return False
-        return True
-    
-    def is_alert_present(self):
-        try: self.driver.switch_to_alert()
-        except NoAlertPresentException as e: return False
-        return True
-    
-    def close_alert_and_get_its_text(self):
-        try:
-            alert = self.driver.switch_to_alert()
-            alert_text = alert.text
-            if self.accept_next_alert:
-                alert.accept()
-            else:
-                alert.dismiss()
-            return alert_text
-        finally: self.accept_next_alert = True
+#    def is_element_present(self, how, what):
+#        try: self.driver.find_element(by=how, value=what)
+#        except NoSuchElementException as e: return False
+#        return True
+#    
+#    def is_alert_present(self):
+#        try: self.driver.switch_to_alert()
+#        except NoAlertPresentException as e: return False
+#        return True
+#    
+#    def close_alert_and_get_its_text(self):
+#        try:
+#            alert = self.driver.switch_to_alert()
+#            alert_text = alert.text
+#            if self.accept_next_alert:
+#                alert.accept()
+#            else:
+#                alert.dismiss()
+#            return alert_text
+#        finally: self.accept_next_alert = True
 #+END_SRC
 Once the test execution finishes, the pre-requisites
 specified in the setUp() method have to be cleaned up.
@@ -160,8 +159,8 @@ if __name__ == "__main__":
     unittest.main()
 
 #+END_SRC
-** Import Lab
-*** Python Test Case to Import Lab
+* Import Lab
+** Python Test Case to Import Lab
     A =setUp()= method works as an entry point for the test
 cases. We can use it to run a fixed set of actions before
 executing a test or all the tests defined in the class.
@@ -235,26 +234,26 @@ to verify the application's functionality.
         driver.find_element_by_id("replace-courselike-button").click()
         driver.find_element_by_id("view-updated-button").click()
 
-    def is_element_present(self, how, what):
-        try: self.driver.find_element(by=how, value=what)
-        except NoSuchElementException as e: return False
-        return True
-    
-    def is_alert_present(self):
-        try: self.driver.switch_to_alert()
-        except NoAlertPresentException as e: return False
-        return True
-    
-    def close_alert_and_get_its_text(self):
-        try:
-            alert = self.driver.switch_to_alert()
-            alert_text = alert.text
-            if self.accept_next_alert:
-                alert.accept()
-            else:
-                alert.dismiss()
-            return alert_text
-        finally: self.accept_next_alert = True
+#    def is_element_present(self, how, what):
+#        try: self.driver.find_element(by=how, value=what)
+#        except NoSuchElementException as e: return False
+#        return True
+#    
+#    def is_alert_present(self):
+#        try: self.driver.switch_to_alert()
+#        except NoAlertPresentException as e: return False
+#        return True
+#    
+#    def close_alert_and_get_its_text(self):
+#        try:
+#            alert = self.driver.switch_to_alert()
+#            alert_text = alert.text
+#            if self.accept_next_alert:
+#                alert.accept()
+#            else:
+#                alert.dismiss()
+#            return alert_text
+#        finally: self.accept_next_alert = True
 #+END_SRC
 Once the test execution finishes, the pre-requisites
 specified in the setUp() method have to be cleaned up.
@@ -282,7 +281,7 @@ if __name__ == "__main__":
 
 #+END_SRC
     
-** Lab sepecification
+* Lab sepecification
     The JSON file with lab_name (sepated with hipen without
     space), directory_path_to_download, lab_url and
     directory path to upload values will be the input to the
