@@ -14,19 +14,6 @@
   This document describes how to export and import the vlabs
   from openedx platform automatically.
 
-* Installation of Selenium IDE
-** Pre-requisites
-   1) Operating System: Ubuntu 14.04
-   2) Firefox Version: 40.0.3 
-     
-** Steps
-  Follow the below steps to install selenium IDE
-  1) Add Selenium IDE to the firefox web browser as a
-     plugin. Visit [[https://addons.mozilla.org/en-US/firefox/addon/selenium-ide/][link]] and click on =Add to Firefox= button
-     to add Selenium IDE to firefox.
-  2) Restart your browser to apply changes.
-  3) =Selenium= Icon will be shown in the browser top corner.
-    
 * Procedure
 ** Export Lab
 *** Export single lab
