@@ -297,3 +297,21 @@ if __name__ == "__main__":
 "directory_path_to_upload":"/home/virtual-labs/projects/open-edx-FAB-laboratory-coep.tar.gz"
 }
 #+END_SRC 
+* Untar files
+#+BEGIN_SRC python :tangle tests/untar_files.py 
+import os
+import json
+
+path = "/home/virtual-labs/Downloads"
+def untar_files():
+    for file in os.listdir(path):
+        if file.endswith(".tar.gz"):
+           print file
+           os.chdir(path)
+           os.system("tar -xvf " + file)
+           new_folder = file.split('.')[0]
+           os.system("mv course/ " + new_folder)
+
+untar_files()
+
+#+END_SRC
