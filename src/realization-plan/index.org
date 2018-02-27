@@ -13,28 +13,42 @@
   - This document contains the realization plan for
     implementing the Vlabs Automated Testing.
 
+* Milestones Snapshot
+
+  |---+----+----+-----+--------------------------------------------------------------------------+------+--------+-----+-----+--------|
+  |   | S. | Mi | Req | Milestone                                                                | Plan | Status | Est | Act | Issues |
+  |   | no | no | Map |                                                                          |      |        | hrs | hrs |        |
+  |---+----+----+-----+--------------------------------------------------------------------------+------+--------+-----+-----+--------|
+  |   | 1. | [[https://github.com/vlead/vlabs-landing-pages/milestone/1][1]]  |     | [[https://github.com/vlead/vlabs-export-import-automation/milestone/1][Automate the process of exporting and importing labs in OpenedX Platform]] |      | Open   |     |     | [[https://github.com/vlead/vlabs-export-import-automation/milestone/1][ref]]    |
+  |---+----+----+-----+--------------------------------------------------------------------------+------+--------+-----+-----+--------|
 * Detailed Plan 
 ** Implementation of Automated Export and Import of an OpenedX lab.
 #+caption:  realization-plan-milestone-8
 #+name: tbl-rlz-pln-ml-8
 
-|---+-------+------------------------------------------------------+--------+----------+--------+-----------+--------+--------+----------|
-|   | S.    | Tasks                                                | Github | Expected | Actual | Estimated | Actual | Status | Assignee |
-|   | NO    |                                                      | Issues | Effort   | Effort | Start,    | Start/ |        |          |
-|   |       |                                                      |        | (in      | (in    | End       | End    |        |          |
-|   |       |                                                      |        | person   | person | Dates     | Dates  |        |          |
-|   |       |                                                      |        | hours)   | hours) |           |        |        |          |
-|---+-------+------------------------------------------------------+--------+----------+--------+-----------+--------+--------+----------|
-|   | 1.    | Implementation of Automated Export of an OpenedX lab | [[https://github.com/vlead/vlabs-automated-testing/issues/1][#1]]     | 24       | 12     |           |        |        | Madhavi  |
-|   |       |                                                      |        |          |        |           |        |        |          |
-|---+-------+------------------------------------------------------+--------+----------+--------+-----------+--------+--------+----------|
-|   | 2.    | Implementation of Automated Import of an OpenedX lab | [[https://github.com/vlead/vlabs-automated-testing/issues/2][#2]]     | 24       |        |           |        |        | Madhavi  |
-|   |       |                                                      |        |          |        |           |        |        |          |
-|   |       |                                                      |        |          |        |           |        |        |          |
-|---+-------+------------------------------------------------------+--------+----------+--------+-----------+--------+--------+----------|
-|   | Total |                                                      |        | 129      | 81     |           |        |        |          |
-| ^ |       |                                                      |        | est      | act    |           |        |        |          |
-|---+-------+------------------------------------------------------+--------+----------+--------+-----------+--------+--------+----------|
+|---+-------+-----------------------------+--------+----------+--------+-----------+--------+--------+----------|
+|   |    S. | Tasks                       | Github | Expected | Actual | Estimated | Actual | Status | Assignee |
+|   |    NO |                             | Issues | Effort   | Effort | Start,    | Start/ |        |          |
+|   |       |                             |        | (in      | (in    | End       | End    |        |          |
+|   |       |                             |        | person   | person | Dates     | Dates  |        |          |
+|   |       |                             |        | hours)   | hours) |           |        |        |          |
+|---+-------+-----------------------------+--------+----------+--------+-----------+--------+--------+----------|
+|   |    1. | Implementation of Automated | [[https://github.com/vlead/vlabs-automated-testing/issues/1][#1]]     | 24       | 12     |           |        |        | Madhavi  |
+|   |       | Export of an OpenedX lab    |        |          |        |           |        |        |          |
+|---+-------+-----------------------------+--------+----------+--------+-----------+--------+--------+----------|
+|   |    2. | Implementation of Automated | [[https://github.com/vlead/vlabs-automated-testing/issues/2][#2]]     | 24       | 12     |           |        |        | Madhavi  |
+|   |       | Import of an OpenedX lab    |        |          |        |           |        |        |          |
+|---+-------+-----------------------------+--------+----------+--------+-----------+--------+--------+----------|
+|   |    3. | Rename the Exported OpenedX | [[https://github.com/vlead/vlabs-export-import-automation/issues/3][#3]]     | 12       | 6      |           |        |        | Madhavi  |
+|   |       | lab with lab name           |        |          |        |           |        |        |          |
+|---+-------+-----------------------------+--------+----------+--------+-----------+--------+--------+----------|
+|   |    4. | Implement python script to  | [[https://github.com/vlead/vlabs-export-import-automation/issues/4][#4]]     | 24       |        |           |        |        | Madhavi  |
+|   |       | auto push files of a lab    |        |          |        |           |        |        |          |
+|   |       | to git repository           |        |          |        |           |        |        |          |
+|---+-------+-----------------------------+--------+----------+--------+-----------+--------+--------+----------|
+|   | Total |                             |        | 84       | 30     |           |        |        |          |
+| ^ |       |                             |        | est      | act    |           |        |        |          |
+|---+-------+-----------------------------+--------+----------+--------+-----------+--------+--------+----------|
 #+TBLFM: $est=vsum(@II+1..@-1)
 #+TBLFM: $act=vsum(@II+1..@-1)
 
