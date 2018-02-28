@@ -43,7 +43,9 @@ class ExportLab(unittest.TestCase):
         self.caps = webdriver.DesiredCapabilities.FIREFOX
         self.caps["marionette"] = False
 #        self.driver = webdriver.Firefox(capabilities=self.caps)
-
+        with open('lab-info.json') as data_file:    
+             self.data = json.load(data_file) 
+        self.path=self.data['directory_path_to_download']
 #+END_SRC 
 Set up browser preferences.
 #+BEGIN_SRC python :tangle tests/test_export_lab.py 
@@ -92,11 +94,8 @@ to verify the application's functionality.
         driver.find_element_by_xpath("//button[@type='submit']").click()
 
         driver.get(self.base_url + "/home/")
-        with open('lab-info.json') as data_file:    
-             data = json.load(data_file) 
 
-        driver.get(self.base_url + data['lab_url'])
-#        driver.find_element_by_xpath("//div[@id='content']/div[2]/section/article/div[3]/ul/li[31]/a/h3").click()
+        driver.get(self.base_url + self.data['lab_url'])
         driver.find_element_by_xpath("//div[@id='view-top']/header/div/nav/ol/li[3]/h3/span[2]").click()
         driver.find_element_by_link_text("Export").click()        
         time.sleep(2)
@@ -106,13 +105,19 @@ to verify the application's functionality.
         time.sleep(10)
 
     def test_rename_file(self):
-        with open('lab-info.json') as data_file:    
-             data = json.load(data_file)
-        lab_name=data['lab_name']+'.tar.gz'
-        path=data['directory_path_to_download']
-        for file in os.listdir(path):
+        lab_name=self.data['lab_name']+'.tar.gz'
+        for file in os.listdir(self.path):
             if file.endswith(".tar.gz"):
-                os.rename(os.path.join(path, file), os.path.join(path, lab_name))
+                os.rename(os.path.join(self.path, file), os.path.join(self.path, lab_name))
+
+    def test_untar_files(self):
+        for file in os.listdir(self.path):
+            if file.endswith(".tar.gz"):
+               print file
+               os.chdir(self.path)
+               os.system("tar -xvf " + file)
+               new_folder = file.split('.')[0]
+               os.system("mv course/ " + new_folder)
 
 #    def is_element_present(self, how, what):
 #        try: self.driver.find_element(by=how, value=what)
@@ -191,6 +196,9 @@ class ImportLab(unittest.TestCase):
         self.base_url = "http://mybox.vlabs.ac.in:18010"
         self.verificationErrors = []
         self.accept_next_alert = True
+        with open('lab-info.json') as data_file:    
+             self.data = json.load(data_file)
+
 #+END_SRC
 After creating a setUp() method, we can now write some tests
 to verify the application's functionality. 
@@ -221,15 +229,13 @@ to verify the application's functionality.
         driver.find_element_by_xpath("//button[@type='submit']").click()
 
         driver.get(self.base_url + "/home/")
-        with open('lab-info.json') as data_file:    
-             data = json.load(data_file)
-        lab_url = data['lab_url']
+        lab_url = self.data['lab_url']
         driver.get(self.base_url + lab_url)
 #        driver.find_element_by_xpath("//div[@id='content']/div[2]/section/article/div[3]/ul/li[31]/a/h3").click()
         driver.find_element_by_xpath("//div[@id='view-top']/header/div/nav/ol/li[3]/h3/span[1]").click()
         driver.find_element_by_link_text("Import").click()
         time.sleep(10)
-        driver.find_element_by_css_selector("input[type=file]").send_keys(data['directory_path_to_upload'])
+        driver.find_element_by_css_selector("input[type=file]").send_keys(self.data['directory_path_to_upload'])
         time.sleep(10)
         driver.find_element_by_id("replace-courselike-button").click()
         driver.find_element_by_id("view-updated-button").click()
@@ -294,24 +300,8 @@ if __name__ == "__main__":
 "lab_name":"open-edx-FAB-laboratory-coep", 
 "directory_path_to_download":"/home/virtual-labs/Downloads",
 "lab_url":"/course/course-v1:Virtual-Labs+cse30+Anytime", 
-"directory_path_to_upload":"/home/virtual-labs/projects/open-edx-FAB-laboratory-coep.tar.gz"
+"directory_path_to_upload":"/home/virtual-labs/projects/open-edx-FAB-laboratory-coep.tar.gz",
+"git_url":"https://github.com/vlabs-on-openedx/open-edx-FAB-laboratory-coep.git" 
 }
 #+END_SRC 
-* Untar files
-#+BEGIN_SRC python :tangle tests/untar_files.py 
-import os
-import json
 
-path = "/home/virtual-labs/Downloads"
-def untar_files():
-    for file in os.listdir(path):
-        if file.endswith(".tar.gz"):
-           print file
-           os.chdir(path)
-           os.system("tar -xvf " + file)
-           new_folder = file.split('.')[0]
-           os.system("mv course/ " + new_folder)
-
-untar_files()
-
-#+END_SRC
