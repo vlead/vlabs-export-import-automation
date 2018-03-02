@@ -34,18 +34,18 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver import ActionChains
 
+from git import Repo
+from config import data
 import unittest, time, re
-import json
-import os
+import json, os, sys
+
 class ExportLab(unittest.TestCase):
 
     def setUp(self):
         self.caps = webdriver.DesiredCapabilities.FIREFOX
         self.caps["marionette"] = False
-#        self.driver = webdriver.Firefox(capabilities=self.caps)
-        with open('lab-info.json') as data_file:    
-             self.data = json.load(data_file) 
-        self.path=self.data['directory_path_to_download']
+        self.driver = webdriver.Firefox(capabilities=self.caps)
+
 #+END_SRC 
 Set up browser preferences.
 #+BEGIN_SRC python :tangle tests/test_export_lab.py 
@@ -59,13 +59,23 @@ Set up browser preferences.
         profile.set_preference("browser.download.panel.shown", False);
  
 #+END_SRC
-Navigate to a base URL.
+Navigate to a base URL.Initialize the variables with config values
 #+BEGIN_SRC python :tangle tests/test_export_lab.py 
         self.driver = webdriver.Firefox(capabilities=self.caps, firefox_profile=profile)
         self.driver.implicitly_wait(30)
-        self.base_url = "http://mybox.vlabs.ac.in:18010"
         self.verificationErrors = []
         self.accept_next_alert = True
+
+        with open('lab-info.json') as data_file:    
+             self.data = json.load(data_file) 
+        self.base_url = data['base_url']
+        self.lab_name = data['lab_name']
+        self.tag_name = data['tag_name']
+        self.lab_name = data['lab_name']
+        self.path = data['directory_path_to_download']
+        self.git_url = data['git_url']
+        self.proxy = data['proxy']
+
 #+END_SRC
 After creating a setUp() method, we can now write some tests
 to verify the application's functionality. 
@@ -96,6 +106,7 @@ to verify the application's functionality.
         driver.get(self.base_url + "/home/")
 
         driver.get(self.base_url + self.data['lab_url'])
+#        driver.find_element_by_xpath("//div[@id='content']/div[2]/section/article/div[3]/ul/li[31]/a/h3").click()
         driver.find_element_by_xpath("//div[@id='view-top']/header/div/nav/ol/li[3]/h3/span[2]").click()
         driver.find_element_by_link_text("Export").click()        
         time.sleep(2)
@@ -103,42 +114,13 @@ to verify the application's functionality.
         time.sleep(2)
         driver.find_element_by_link_text("Download Exported Course").click()
         time.sleep(10)
+        rename_lab_folder(self)
+        untar_lab_folder(self)
+        git_clone_repo(self)
+        git_tag_repo(self)
+        copy_files_to_git_repo(self)
+        push_updated_files_to_git_repo(self)
 
-    def test_rename_file(self):
-        lab_name=self.data['lab_name']+'.tar.gz'
-        for file in os.listdir(self.path):
-            if file.endswith(".tar.gz"):
-                os.rename(os.path.join(self.path, file), os.path.join(self.path, lab_name))
-
-    def test_untar_files(self):
-        for file in os.listdir(self.path):
-            if file.endswith(".tar.gz"):
-               print file
-               os.chdir(self.path)
-               os.system("tar -xvf " + file)
-               new_folder = file.split('.')[0]
-               os.system("mv course/ " + new_folder)
-
-#    def is_element_present(self, how, what):
-#        try: self.driver.find_element(by=how, value=what)
-#        except NoSuchElementException as e: return False
-#        return True
-#    
-#    def is_alert_present(self):
-#        try: self.driver.switch_to_alert()
-#        except NoAlertPresentException as e: return False
-#        return True
-#    
-#    def close_alert_and_get_its_text(self):
-#        try:
-#            alert = self.driver.switch_to_alert()
-#            alert_text = alert.text
-#            if self.accept_next_alert:
-#                alert.accept()
-#            else:
-#                alert.dismiss()
-#            return alert_text
-#        finally: self.accept_next_alert = True
 #+END_SRC
 Once the test execution finishes, the pre-requisites
 specified in the setUp() method have to be cleaned up.
@@ -155,6 +137,72 @@ need the instance of Firefox. So we will close it in the
     def tearDown(self):
         self.driver.quit()
         self.assertEqual([], self.verificationErrors)
+#+END_SRC
+#+BEGIN_SRC python :tangle tests/test_export_lab.py 
+def rename_lab_folder(self):
+    print "============rename exported edx lab folder=========" 
+    new_lab_name=self.lab_name+'-edx'+'.tar.gz'
+    for file in os.listdir(self.path):
+        if file.endswith(".tar.gz"):
+            os.rename(os.path.join(self.path, file), os.path.join(self.path, new_lab_name))
+#+END_SRC
+#+BEGIN_SRC python :tangle tests/test_export_lab.py 
+def untar_lab_folder(self):
+    print "===========untar files from edx lab folder==========="
+    for file in os.listdir(self.path):
+        if file.endswith(".tar.gz"):
+           print file
+           os.chdir(self.path)
+           os.system("tar -xvf " + file)
+           new_folder = file.split('.')[0]
+           os.system("mv course/ " + new_folder)
+#+END_SRC
+#+BEGIN_SRC python :tangle tests/test_export_lab.py 
+def git_clone_repo(self):
+    # setup proxy settings to install any package     
+    os.environ["HTTP_PROXY"] = self.proxy
+    os.environ["HTTPS_PROXY"] = self.proxy
+
+    clone = "git clone "+ self.git_url
+
+    os.chdir(self.path) # Specifying the path where the cloned project has to be copied
+    os.system(clone) # Cloning
+    print "\n LAB %s CLONED SUCCESSFULLY.! \n" %self.lab_name
+#+END_SRC
+#+BEGIN_SRC python :tangle tests/test_export_lab.py 
+def git_tag_repo(self):
+    obj = Repo(self.lab_name)
+    os.chdir(self.path) # Specifying the path where the cloned project has to be copied
+    obj.create_tag(self.tag_name)
+    obj.remotes.origin.push(self.tag_name)
+    print "git tag with version %s pushed successfully" %self.tag_name
+#+END_SRC
+#+BEGIN_SRC python :tangle tests/test_export_lab.py 
+def copy_files_to_git_repo(self):
+    dest_dir = self.path + '/' + self.lab_name
+
+    os.chdir(dest_dir)
+    os.system('git rm -rf *')
+    print "removed old files successfully...."
+
+    src_dir = dest_dir + '-edx' + '/*'
+    os.system('cp -rf '+ src_dir+" " + dest_dir)
+    print "copied new files to lab dir successfully..."
+#+END_SRC
+#+BEGIN_SRC python :tangle tests/test_export_lab.py 
+def push_updated_files_to_git_repo(self):
+    # setup proxy settings to install any package     
+    os.environ["HTTP_PROXY"] = self.proxy
+    os.environ["HTTPS_PROXY"] = self.proxy
+
+    dest_dir = self.path + '/' + self.lab_name
+    os.chdir(dest_dir)
+    os.system('git status')
+    os.system('git add .')
+    os.system('git commit -m "updated new files"')
+    os.system ('git push origin master')
+    print "updated sources pushed to github lab repo successfully..."
+
 #+END_SRC
 
 Running the tests from the command line would require us to
@@ -304,4 +352,19 @@ if __name__ == "__main__":
 "git_url":"https://github.com/vlabs-on-openedx/open-edx-FAB-laboratory-coep.git" 
 }
 #+END_SRC 
+
+* Config
+#+BEGIN_SRC json :tangle tests/config.py 
+data={
+"lab_name":"open-edx-FAB-laboratory-coep", 
+"directory_path_to_download":"/home/virtual-labs/Downloads",
+"lab_url":"/course/course-v1:Virtual-Labs+cse30+Anytime", 
+"directory_path_to_upload":"/home/virtual-labs/projects/open-edx-FAB-laboratory-coep.tar.gz",
+"git_url":"https://github.com/madhavipuliraju/open-edx-FAB-laboratory-coep.git",
+"tag_name":"v4.6.0",
+"proxy":"http://proxy.iiit.ac.in:8080",
+"base_url":"http://mybox.vlabs.ac.in:18010"
+}
+
+#+END_SRC
 
