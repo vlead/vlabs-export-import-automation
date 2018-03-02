@@ -335,24 +335,6 @@ if __name__ == "__main__":
 
 #+END_SRC
     
-* Lab sepecification
-    The JSON file with lab_name (sepated with hipen without
-    space), directory_path_to_download, lab_url and
-    directory path to upload values will be the input to the
-    above scripts. Update these values for exporting and
-    importing different labs. This JSON file will be
-    different for each lab.
-
-#+BEGIN_SRC json :tangle tests/lab-info.json 
-{
-"lab_name":"open-edx-FAB-laboratory-coep", 
-"directory_path_to_download":"/home/virtual-labs/Downloads",
-"lab_url":"/course/course-v1:Virtual-Labs+cse30+Anytime", 
-"directory_path_to_upload":"/home/virtual-labs/projects/open-edx-FAB-laboratory-coep.tar.gz",
-"git_url":"https://github.com/vlabs-on-openedx/open-edx-FAB-laboratory-coep.git" 
-}
-#+END_SRC 
-
 * Config
 #+BEGIN_SRC json :tangle tests/config.py 
 data={
@@ -368,3 +350,110 @@ data={
 
 #+END_SRC
 
+* test code
+#+BEGIN_SRC 
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoAlertPresentException
+from selenium.webdriver import ActionChains
+from ddt import ddt, file_data, data
+from git import Repo
+from config import data
+import unittest, time, re
+import json, os, sys
+
+l = [{"lab_name":"open-edx-FAB-laboratory-coep", 
+"lab_id":"foo",
+"directory_path_to_download":"/home/virtual-labs/Downloads",
+"lab_url":"/course/course-v1:Virtual-Labs+cse30+Anytime", 
+"directory_path_to_upload":"/home/virtual-labs/projects/open-edx-FAB-laboratory-coep.tar.gz",
+"git_url":"https://github.com/madhavipuliraju/open-edx-FAB-laboratory-coep-edx.git",
+"tag_name":"v5.0.0",
+"proxy":"http://proxy.iiit.ac.in:8080",
+"base_url":"http://mybox.vlabs.ac.in:18010"
+},
+{"lab_name":"bar-lab", 
+"lab_url":"/course/course-v1:Virtual-Labs+civil24+Anytime", 
+"directory_path_to_download":"/home/virtual-labs/Downloads",
+"lab_id":"bar"}, 
+{"lab_name":"lee-lab", 
+"lab_url":"/course/course-v1:Virtual-Labs+civil21+Anytime", 
+"directory_path_to_download":"/home/virtual-labs/Downloads",
+"lab_id":"lee"}]
+
+class TestExportLab(type):
+
+    def __new__(mcs, name, bases, dict):
+        def gen_test(lab_name, lab_url, path):
+            def test_export_lab(self):
+                driver = self.driver
+                driver.maximize_window()
+                driver.get(self.base_url + "/logout")
+                driver.get(self.base_url + "/signin")
+                driver.find_element_by_id("email").clear()
+                driver.find_element_by_id("email").send_keys("honor@example.com")
+                driver.find_element_by_id("password").clear()
+                driver.find_element_by_id("password").send_keys("edx")
+                driver.find_element_by_xpath("//button[@type='submit']").click()
+#                driver.get(self.base_url + "/home/")
+                driver.get(self.base_url + lab_url)
+                driver.find_element_by_xpath("//div[@id='view-top']/header/div/nav/ol/li[3]/h3/span[2]").click()
+                driver.find_element_by_link_text("Export").click()        
+                time.sleep(2)
+                driver.find_element_by_link_text("Export Course Content").click()
+                time.sleep(2)
+                driver.find_element_by_link_text("Download Exported Course").click()
+                time.sleep(5)
+                self.rename_lab_folder(lab_name, path)
+            return test_export_lab
+
+
+        for lab in l:
+            test_name = "test_%s" % lab['lab_name']
+            print test_name
+            dict[test_name] = gen_test(lab['lab_name'], lab['lab_url'], lab['directory_path_to_download'])
+        return type.__new__(mcs, name, bases, dict)
+
+
+class TestSequence(unittest.TestCase):
+    def setUp(self):
+        self.caps = webdriver.DesiredCapabilities.FIREFOX
+        self.caps["marionette"] = False
+#        self.driver = webdriver.Firefox(capabilities=self.caps)
+
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference('browser.download.folderList', 1)
+        profile.set_preference('browser.download.manager.showWhenStarting', False)
+        profile.set_preference("browser.download.manager.showAlertOnComplete", False)
+        profile.set_preference('browser.download.dir', '/home/sravanthi/projects/')
+        profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/x-tgz')
+        profile.set_preference('browser.download.manager.showWhenStarting', False)
+        profile.set_preference("browser.download.panel.shown", False);
+
+        self.driver = webdriver.Firefox(capabilities=self.caps, firefox_profile=profile)
+        self.driver.implicitly_wait(30)
+        self.base_url = "http://mybox.vlabs.ac.in:18010"
+        self.verificationErrors = []
+        self.accept_next_alert = True
+
+    def rename_lab_folder(self, lab_name, path):
+        print "============rename exported edx lab folder=========" 
+        new_lab_name=lab_name+'-edx'+'.tar.gz'
+        for file in os.listdir(path):
+            if file.endswith(".tar.gz"):
+                os.rename(os.path.join(path, file), os.path.join(path, new_lab_name))
+
+    def tearDown(self):
+        self.driver.quit()
+        self.assertEqual([], self.verificationErrors)
+
+
+    __metaclass__ = TestExportLab
+
+if __name__ == '__main__':
+    unittest.main()
+
+#+END_SRC
